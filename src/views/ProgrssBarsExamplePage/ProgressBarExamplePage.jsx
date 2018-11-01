@@ -39,7 +39,7 @@ class ProgressBarExamplePage extends React.Component {
 
 
     fetchData() {
-        axios.get('http://pb-api.herokuapp.com/bars')
+        axios.get('https://pb-api.herokuapp.com/bars')
             .then((response) => {
                 console.log('response', response);
                 if (response.data.bars) {
