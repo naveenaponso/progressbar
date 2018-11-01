@@ -5,6 +5,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import {infoColor} from "../../assets/Colors";
 import * as axios from "axios";
 import {generateId} from "../../helpers/helpers";
+import CustomDropdown from "../../components/CustomDropdown/CustomDropdown";
 
 const styles = {
     container: {
@@ -12,17 +13,39 @@ const styles = {
         minWidth: "500px",
         margin: "2%",
         padding: "2%",
-        border: "1px solid " + infoColor
+        border: "1px solid " + infoColor,
+        float: 'left'
     },
     heading: {
         margin: "2%",
+        width: "96%",
         fontWeight: '700',
         fontSize: '2.35em',
         textAlign: 'left',
-        fontFamily: 'Verdana, Geneva, sans-serif'
+        fontFamily: 'Verdana, Geneva, sans-serif',
+        float: 'left'
     },
     progressBar: {
-        width: "96%"
+        width: "98%"
+    },
+    operationsContainer: {
+        float: 'left',
+        width: '100%',
+    },
+
+    dropdown: {
+        width: '16%',
+        float: 'left',
+        marginRight: '4%',
+
+    },
+    operations: {
+        width: '80%',
+        float: 'right',
+    },
+    operationButton: {
+        width: '20%',
+        float: 'right',
     }
 };
 
@@ -33,10 +56,14 @@ class ProgressBarExamplePage extends React.Component {
         this.state = {
             progressBars: [],
             buttons: [],
+            names: [],
             limit: 0
         };
     }
 
+    handleOperations(value) {
+        console.log('handleOperations', value)
+    }
 
     fetchData() {
         axios.get('https://pb-api.herokuapp.com/bars')
@@ -45,19 +72,22 @@ class ProgressBarExamplePage extends React.Component {
                 if (response.data.bars) {
 
                     let progressBars = [];
+                    let names = [];
 
                     response.data.bars.map((value, key) => {
                         let barData = {};
                         barData.name = generateId();
                         barData.value = value;
-                        barData.color = key % 2 === 0 ? 'primary' : 'info';
+                        barData.color = key % 2 === 0 ? 'rose' : 'info';
                         progressBars.push(barData);
+                        names.push(barData.name);
                     });
 
                     this.setState({
                         progressBars,
                         buttons: response.data.buttons,
-                        limit: response.data.limit
+                        limit: response.data.limit,
+                        names
                     });
 
                     console.log('progressBars', progressBars)
@@ -74,7 +104,7 @@ class ProgressBarExamplePage extends React.Component {
 
     render() {
         const {classes, ...rest} = this.props;
-        const {buttons, progressBars, limit} = this.state;
+        const {buttons, progressBars, limit, names} = this.state;
         console.log('state', this.state);
         return (
             <div>
@@ -96,15 +126,36 @@ class ProgressBarExamplePage extends React.Component {
                         )
                     })}
 
-                    {
-                        buttons && buttons.map((value, key) => {
-                            return (
-                                <Button color="primary" size="sm" key={key}>
-                                    {value}
-                                </Button>
-                            )
-                        })
-                    }
+                    <div className={classes.operationsContainer}>
+                        <div className={classes.dropdown}>
+                            <CustomDropdown
+                                buttonText="Select Bar"
+                                // dropdownHeader="Dropdown Header"
+                                buttonProps={{
+                                    color: "warning"
+                                }}
+                                dropdownList={names}
+                                hoverColor={"warning"}
+                            />
+                        </div>
+
+                        <div className={classes.operations}>
+                            {
+                                buttons && buttons.map((value, key) => {
+                                    return (
+                                        <div className={classes.operationButton}>
+                                            <Button color="primary" key={key} onClick={() => {
+                                                this.handleOperations(value)
+                                            }}>
+                                                {value}
+                                            </Button>
+                                        </div>
+
+                                    )
+                                })
+                            }
+                        </div>
+                    </div>
 
                 </div>
             </div>
